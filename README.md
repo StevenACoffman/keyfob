@@ -124,5 +124,5 @@ region = us-east-1
 role_arn = arn:aws:iam::111111111111:role/put-power-role-here
 source_profile = sosourcey
 ```
-5. Ma
+5. Make sure you've edited and replaced the AWS account, userid, and power-role above.
 
