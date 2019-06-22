@@ -1,8 +1,15 @@
 keyfob is a two-factor authentication agent suitable for AWS and Github. Works pretty much the same as Google Authenticator, but uses your laptop's keychain.
 
-Usage:
+## Installation
 
-    go get -u github.com/StevenACoffman/keyfob
+If you're on a mac, you can just do this:
+
+    wget -O - https://raw.githubusercontent.com/StevenACoffman/keyfob/master/install.sh | bash
+
+
+This will download the github 0.1.0 binary release for mac, and move any of your MFA secrets from `2fa` over to your keychain.
+
+## Usage
 
     keyfob add [name] [key]
     keyfob otp [name]
@@ -18,9 +25,6 @@ The new key generates time-based (TOTP) authentication codes.
 `keyfob opt [name]` prints a One Time Password (aka two-factor authentication) code from the key with the
 given name. If `--clip` is specified, `keyfob` also copies to the code to the system
 clipboard.
-
-With no arguments, `keyfob` prints two-factor authentication codes from all
-known time-based keys.
 
 The time-based authentication codes are derived from a hash of the
 key and the current time, so it is important that the system clock have at
@@ -48,7 +52,7 @@ Then whenever GitHub prompts for a 2FA code, run keyfob to obtain one:
 
 ## Derivation
 
-This is just a little toy cobbled together from [2fa](https://github.com/rsc/2fa/), [cobra](https://github.com/spf13/cobra), and [go-keyring](https://github.com/zalando/go-keyring).
+This is just a little toy cobbled together from [2fa](https://github.com/rsc/2fa/), [cobra](https://github.com/spf13/cobra), and [go-keyring](https://github.com/zalando/go-keyring) and using [goreleaser](https://github.com/goreleaser/goreleaser).
 
 Unlike 2fa, this doesn't support listing all the stored codes, or adding 7 or 8 character long TOTP, or counter-based (HOTP) codes. Pillaging ... ehrm... adapting the 2fa code to do that in here would be easy, but I don't need it.
 
@@ -82,4 +86,43 @@ keyring frontend program [Seahorse](https://wiki.gnome.org/Apps/Seahorse):
  * Go to **File > New > Password Keyring**
  * Click **Continue**
  * When asked for a name, use: **login**
+ 
+ 
+## Usage with aws-vault
+
+This assumes you have installed `keyfob` but need to set up your secrets.
+
+Your own organization __*might*__ have a different preferred `source_profile` name from `sosourcey` below.
+
+1. Skip to **[2](#2)** if you already added your AWS access key and secret access key to aws vault. Otherwise do this:
+```
+$ aws-vault add sosourcey --keychain login
+```
+2. <a name="2"></a>Go to AWS, and [make a new MFA token](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_virtual.html#enable-virt-mfa-for-iam-user). Either take a screenshot of the QR Code (⌘⇧3 aka Command-Shift-3) and run `zbarimg` on it as below, or click the option to see the text version. Save that secret somewhere. Also add it to your Google Authenticator as normal.
+```
+brew cask install aws-vault
+brew install go zbar awscli
+# To get the text secret out of the QR Code if you didn't ask to see that
+zbarimg AWS_IAM_Management_Console.png
+```
+3. Copy the `aws-credential-helper.sh` script in this repository to a place in your shell path and remember the absolute path to there. 
+
+4. Add to your `.aws/config` file something like this:
+```
+[default]
+credential_process = /Users/scoffman/bin/aws-credential-helper-engineer.sh
+region = us-east-1
+output = json
+ 
+[profile sosourcey]
+region = us-east-1
+mfa_serial = arn:aws:iam::111111111111:mfa/scoffman
+ 
+[profile engineer]
+mfa_serial = arn:aws:iam::111111111111:mfa/scoffman
+region = us-east-1
+role_arn = arn:aws:iam::111111111111:role/put-power-role-here
+source_profile = sosourcey
+```
+5. Ma
 
