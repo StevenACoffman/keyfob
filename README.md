@@ -1,4 +1,4 @@
-keyfob is a two-factor authentication agent suitable for AWS and Github. Works pretty much the same as Google Authenticator, but uses your laptop's keychain.
+keyfob is a two-factor authentication agent suitable for AWS and Github. Works pretty much the same as Google Authenticator or Authy, but uses your laptop's keychain.
 
 ## Installation
 
