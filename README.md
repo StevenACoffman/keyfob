@@ -13,18 +13,21 @@ This will download the github 0.1.0 binary release for mac, and move any of your
 
     keyfob add [name] [key]
     keyfob otp [name]
+    keyfob list
     keyfob help
 
-`keyfob add name` adds a new key to the keyfob keychain with the given name. It
++ `keyfob add name` adds a new key to the keyfob keychain with the given name. It
 prints a prompt to standard error and reads a two-factor key from standard
 input. Two-factor keys are short case-insensitive strings of letters A-Z and
 digits 2-7.
 
-The new key generates time-based (TOTP) authentication codes.
+  The new key generates time-based (TOTP) authentication codes.
 
-`keyfob opt [name]` prints a One Time Password (aka two-factor authentication) code from the key with the
++ `keyfob opt [name]` prints a One Time Password (aka two-factor authentication) code from the key with the
 given name. If `--clip` is specified, `keyfob` also copies to the code to the system
 clipboard.
+
++ `keyfob list` prints the names of all the added keys, if any.
 
 The time-based authentication codes are derived from a hash of the
 key and the current time, so it is important that the system clock have at
@@ -42,19 +45,15 @@ Add it to keyfob under the name github, typing the secret at the prompt:
 
     $ keyfob add github
     keyfob key for github: nzxxiidbebvwk6jb
-    $
 
 Then whenever GitHub prompts for a 2FA code, run keyfob to obtain one:
 
     $ keyfob otp github
     268346
-    $
 
 ## Derivation
 
 This is just a little toy cobbled together from [2fa](https://github.com/rsc/2fa/), [cobra](https://github.com/spf13/cobra), and [go-keyring](https://github.com/zalando/go-keyring) and using [goreleaser](https://github.com/goreleaser/goreleaser).
-
-Unlike 2fa, this doesn't support listing all the stored codes, or adding 7 or 8 character long TOTP, or counter-based (HOTP) codes. Pillaging ... ehrm... adapting the 2fa code to do that in here would be easy, but I don't need it.
 
 ## Really, does this make sense?
 
