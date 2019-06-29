@@ -26,3 +26,18 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+brews:
+  -
+    name: keyfob
+    github:
+      owner: StevenACoffman
+      name: homebrew-keyfob
+    folder: Formula
+    homepage: "https://github.com/StevenACoffman/keyfob"
+    description: keyfob - a two-factor authentication agent suitable for AWS and Github
+    test: |
+      system "#{bin}/keyfob", "--version"
+    install: |
+      bin.install "keyfob" => "keyfob"
+
+      prefix.install_metafiles
