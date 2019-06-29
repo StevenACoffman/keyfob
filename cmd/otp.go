@@ -33,7 +33,7 @@ import (
 var otpCmd = &cobra.Command{
 	Use:   "otp [key name]",
 	Short: "Generate a One Time Password",
-	Long: `otp name prints a two-factor authentication code from the key with the given name. 
+	Long: `otp [key name] prints a two-factor authentication code from the key with the given name. 
 If -clip is specified, otp also copies to the code to the system clipboard.
 With no arguments, otp prints two-factor authentication codes from all known time-based keys.
 
@@ -44,24 +44,35 @@ so it is important that the system clock have at least one-minute accuracy.`,
 
 		service := "keyfob"
 		user := args[0]
-		secret, err := keyring.Get(service, user)
+
+		codeText, err := generateTOTP(service, user)
 		if err != nil {
 			log.Fatal(err)
-		}
-		raw, err := decodeKey(secret)
-		if err == nil {
-			code := totp(raw, time.Now(), 6)
-			codeText := fmt.Sprintf("%0*d", 6, code)
-
-			if clip {
-				clipboard.WriteAll(codeText)
-			}
-
-			fmt.Printf("%s\n", codeText)
 			return
 		}
-		log.Printf("%s: malformed key", secret)
+
+		if clip {
+			clipboard.WriteAll(codeText)
+		}
+		//fmt has no prefix, log does
+		fmt.Printf("%s\n", codeText)
+
 	},
+}
+
+func generateTOTP(service, user string) (string, error) {
+	secret, err := keyring.Get(service, user)
+	if err != nil {
+		return "", err
+	}
+	raw, err := decodeKey(secret)
+	if err != nil {
+		return "", fmt.Errorf("%s: malformed key", secret)
+	}
+	code := totp(raw, time.Now(), 6)
+	codeText := fmt.Sprintf("%0*d", 6, code)
+
+	return codeText, nil
 }
 
 var clip bool

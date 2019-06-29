@@ -1,0 +1,63 @@
+/*
+Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+package cmd
+
+import (
+	"fmt"
+	"log"
+	"github.com/spf13/cobra"
+	"os/exec"
+)
+
+// vaultCmd represents the vault command
+var vaultCmd = &cobra.Command{
+	Use:   "vault [key name] [aws profile]",
+	Short: "AWS credential helper using AWS Vault and Time-based One Time Password",
+	Long: `"vault [key name] [aws profile] will act as an AWS credential helper using
+AWS Vault and Time-based One Time Password
+Ref: https://docs.aws.amazon.com/cli/latest/topic/config-vars.html#sourcing-credentials-from-external-processes`,
+	Args: cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		service := "keyfob"
+		user := args[0]
+		profile := args[1]
+		codeText, err := generateTOTP(service, user)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		out, err := exec.Command(
+			"aws-vault", "exec", "--mfa-token="+codeText, "-j", profile).CombinedOutput()
+		fmt.Println(string(out))
+		if err != nil {
+			log.Fatalf("aws-vault returned %v", err)
+		}
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(vaultCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// vaultCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// vaultCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
