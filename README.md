@@ -2,12 +2,20 @@ keyfob is a two-factor authentication agent suitable for AWS and Github. Works p
 
 ## Installation
 
-If you're on a mac, you can just do this:
+If you use homebrew:
+
+```
+brew tap StevenACoffman/keyfob
+brew install keyfob
+```
+Any subsequent releases should get picked up automatically with `brew upgrade`
+
+If don't use homewbrew, and you're on a mac, you can just do this:
 
     wget -O - https://raw.githubusercontent.com/StevenACoffman/keyfob/master/install.sh | bash
 
 
-This will download the github 0.1.0 binary release for mac, and move any of your MFA secrets from `2fa` over to your keychain.
+This will download the github 0.3.0 binary release for mac, and move any of your MFA secrets from `2fa` over to your keychain.
 
 ## Usage
 
