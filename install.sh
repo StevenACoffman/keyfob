@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
+# Script will setup pretty much everything you need
+
 # Installing kefob
 
 if [ ! -x "$(command -v keyfob)" ]; then
   echo "keyfob is not installed, so I'm going to go grab the mac one for you"
-  if [! -x "(command -v brew)" ]; then
-    KEYFOB_RELEASE='0.3.0'
+  if [ ! -x "$(command -v brew)" ]; then
+    KEYFOB_RELEASE='0.4.0'
     echo "Homebrew is not installed, so I'm going to grab the v${KEYFOB_RELEASE} current release from github"
     wget -O - "https://github.com/StevenACoffman/keyfob/releases/download/v${KEYFOB_RELEASE}/keyfob_${KEYFOB_RELEASE}_Darwin_x86_64.tar.gz" | tar xzvf
     mkdir -p /usr/local/bin
