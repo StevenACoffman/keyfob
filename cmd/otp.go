@@ -1,17 +1,25 @@
 /*
-Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+The MIT License (MIT)
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Copyright © 2019 StevenACoffman
 
-    http://www.apache.org/licenses/LICENSE-2.0
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
 package cmd
 
@@ -32,7 +40,7 @@ import (
 // otpCmd represents the otp command
 var otpCmd = &cobra.Command{
 	Use:   "otp [key name]",
-	Short: "Generate a One Time Password",
+	Short: "Generate a One Time Password for the named key",
 	Long: `otp [key name] prints a two-factor authentication code from the key with the given name. 
 If -clip is specified, otp also copies to the code to the system clipboard.
 With no arguments, otp prints two-factor authentication codes from all known time-based keys.
@@ -43,9 +51,9 @@ so it is important that the system clock have at least one-minute accuracy.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		service := "keyfob"
-		user := args[0]
+		keyName := args[0]
 
-		codeText, err := generateTOTP(service, user)
+		codeText, err := generateTOTP(service, keyName)
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -60,8 +68,8 @@ so it is important that the system clock have at least one-minute accuracy.`,
 	},
 }
 
-func generateTOTP(service, user string) (string, error) {
-	secret, err := keyring.Get(service, user)
+func generateTOTP(service, keyName string) (string, error) {
+	secret, err := keyring.Get(service, keyName)
 	if err != nil {
 		return "", err
 	}

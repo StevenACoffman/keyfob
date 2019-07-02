@@ -24,48 +24,60 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"encoding/base32"
 	"fmt"
-	"log"
+	"github.com/mdp/qrterminal"
 	"github.com/spf13/cobra"
-	"os/exec"
+	"github.com/zalando/go-keyring"
+	"log"
+	"os"
+	osUser "os/user"
 )
 
-// vaultCmd represents the vault command
-var vaultCmd = &cobra.Command{
-	Use:   "vault [key name] [aws profile]",
-	Short: "AWS credential helper using AWS Vault and Time-based One Time Password",
-	Long: `"vault [key name] [aws profile] will act as an AWS credential helper using
-AWS Vault and Time-based One Time Password
-Ref: https://docs.aws.amazon.com/cli/latest/topic/config-vars.html#sourcing-credentials-from-external-processes`,
-	Args: cobra.ExactArgs(2),
+// qrCmd represents the qr command
+var qrCmd = &cobra.Command{
+	Use:   "qr [key name]",
+	Short: "Generate a QR Code for the named key",
+	Long: `qr [key name] prints a QR Code for the key with the given name.
+This can be useful for backing up QR Codes to Google Authenticator or Authy or whatever.`,
+
 	Run: func(cmd *cobra.Command, args []string) {
+
 		service := "keyfob"
-		user := args[0]
-		profile := args[1]
-		codeText, err := generateTOTP(service, user)
+		keyName := args[0]
+
+		err := generateQRCode(service, keyName)
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
-		out, err := exec.Command(
-			"aws-vault", "exec", "--mfa-token="+codeText, "-j", profile).CombinedOutput()
-		fmt.Println(string(out))
-		if err != nil {
-			log.Fatalf("aws-vault returned %v", err)
-		}
 	},
 }
 
+func generateQRCode(service, keyName string) error {
+	secret, err := keyring.Get(service, keyName)
+	if err != nil {
+		return err
+	}
+	raw, err := decodeKey(secret)
+	if err != nil {
+		return fmt.Errorf("%s: malformed key", secret)
+	}
+
+	currentUser, err := osUser.Current()
+	if err != nil {
+		return err
+	}
+	uri := fmt.Sprintf("otpauth://totp/%s@%s?secret=%s&issuer=%s",
+		keyName+ ":" + currentUser.Username,
+		keyName,
+		base32.StdEncoding.EncodeToString(raw),
+		keyName,
+	)
+
+	qrterminal.Generate(uri, qrterminal.L, os.Stderr)
+	return nil
+}
 func init() {
-	rootCmd.AddCommand(vaultCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// vaultCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// vaultCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(qrCmd)
 }
