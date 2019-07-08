@@ -22,6 +22,7 @@ This will download the github 0.3.0 binary release for mac, and move any of your
     keyfob add [name] [key]
     keyfob otp [name]
     keyfob list
+    keyfob qr [name]
     keyfob vault [name] [profile]
     keyfob help
 
@@ -32,11 +33,13 @@ digits 2-7.
 
   The new key generates time-based (TOTP) authentication codes.
 
-+ `keyfob opt [name]` prints a One Time Password (aka two-factor authentication) code from the key with the
++ `keyfob otp [name]` prints a One Time Password (aka two-factor authentication) code from the key with the
 given name. If `--clip` is specified, `keyfob` also copies to the code to the system
 clipboard.
 
 + `keyfob list` prints the names of all the added keys, if any.
+
++ `keyfob qr [name]` prints a QR Code for the key with the given name. This can be useful for backing up QR Codes to Google Authenticator or Authy or whatever.
 
 + `keyfob vault [name] [profile]` acts as a will act as an [AWS credential helper](https://docs.aws.amazon.com/cli/latest/topic/config-vars.html#sourcing-credentials-from-external-processes) using [AWS Vault](https://github.com/99designs/aws-vault/) and a One Time Password.
 
@@ -148,5 +151,30 @@ region = us-east-1
 role_arn = arn:aws:iam::111111111111:role/put-power-role-here
 source_profile = source
 ```
-9. Make sure you've edited and replaced the AWS account, userid, and power-role above.
+9. Run `aws-vault add source --keychain login` and provide your AWS secret access key and AWS access key when prompted.
 
+Here `default` profile depends on `engineer` profile which depends on `source` profile.
+  1. The `default` profile specifies a `credential_process`, which will tell `keyfob` to use the `engineer` profile when invoking `aws-vault`
+  2. The `engineer` profile specifies a `source_profile` which uses the `source` profile for credentials in `aws-vault`.
+  3. The `source` profile has credentials stored by `aws-vault` in the keychain.
+
+<table><tr><td>:bulb: <b>NOTE:</b> Make sure you've edited and replaced the AWS account, userid, and power-role above.</td></tr></table>
+
+If your AWS user doesn't need to assume a privileged role, then omit the `engineer` profile and use `keyfob vault aws-source source` as the `credential_process`.
+
+You also don't have to make the keyfob profile be the default, but some AWS SDKs (looking at you Java) may struggle otherwise.
+
+You may want to export something like these environment variables in your `.bash_profile` or `.bashrc` (or whatever zsh uses):
+```
+export AWS_MY_USERNAME='scoffman'
+export AWS_SDK_LOAD_CONFIG=true
+export AWS_REGION="us-east-1"
+export AWS_DEFAULT_REGION="us-east-1"
+export AWS_DEFAULT_OUTPUT="json"
+export AWS_VAULT_KEYCHAIN_NAME='login'
+export AWS_MFA_NAME='aws-source'
+# 3600s is max for chaining roles
+export AWS_ASSUME_ROLE_TTL='3600s'
+export AWS_SESSION_TTL='12h'
+export AWS_FEDERATION_TOKEN_TTL='12h'
+```
