@@ -2,7 +2,7 @@
 
 # Script will setup pretty much everything you need
 
-# Installing kefob
+# Installing keyfob
 
 if [ ! -x "$(command -v keyfob)" ]; then
   echo "keyfob is not installed, so I'm going to go grab the mac one for you"
@@ -16,6 +16,17 @@ if [ ! -x "$(command -v keyfob)" ]; then
     echo "Using homebrew and tapping StevenACoffman/keyfob"
     brew tap StevenACoffman/keyfob
     brew install keyfob
+  fi
+
+fi
+
+if [ ! -x "$(command -v aws-vault)" ]; then
+  echo "keyfob is not installed, so I'm going to go grab the mac one for you"
+  if [ ! -x "$(command -v brew)" ]; then
+    echo "Homebrew is not installed, so I'm **NOT** going to install aws-vault for you automatically"
+  else
+    echo "Using homebrew cask to install aws-vault"
+    brew cask install aws-vault
   fi
 
 fi

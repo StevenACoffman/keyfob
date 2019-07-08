@@ -104,7 +104,7 @@ keyring frontend program [Seahorse](https://wiki.gnome.org/Apps/Seahorse):
  
 ## Usage with aws-vault
 
-This assumes you have installed `keyfob` but need to set up your secrets.
+This assumes you have installed `keyfob` and `aws-vault` but need to set up your secrets. See [aws-vault](https://github.com/99designs/aws-vault) for instructions on setting that up.
 
 __*Note:*__ Your own organization __*might*__ have a different preferred `source_profile` name from `source` below, and your AWS account number is probably not `111111111111`.
 
@@ -164,7 +164,7 @@ If your AWS user doesn't need to assume a privileged role, then omit the `engine
 
 You also don't have to make the keyfob profile be the default, but some AWS SDKs (looking at you Java) may struggle otherwise.
 
-You may want to export something like these environment variables in your `.bash_profile` or `.bashrc` (or whatever zsh uses):
+You also may want to export something like these environment variables in your `.bash_profile` or `.bashrc` (or whatever zsh uses):
 ```
 export AWS_MY_USERNAME='scoffman'
 export AWS_SDK_LOAD_CONFIG=true
