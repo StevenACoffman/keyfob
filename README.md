@@ -55,10 +55,9 @@ During GitHub 2FA setup, at the “Scan this barcode with your app” step,
 click the “enter this text code instead” link. A window pops up showing
 “your two-factor secret,” a short string of letters and digits.
 
-Add it to keyfob under the name github, typing the secret at the prompt:
+Add it to keyfob under the name github and append the secret:
 
-    $ keyfob add github
-    keyfob key for github: nzxxiidbebvwk6jb
+    $ keyfob add github nzxxiidbebvwk6jb
 
 Then whenever GitHub prompts for a 2FA code, run keyfob to obtain one:
 
