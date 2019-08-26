@@ -40,7 +40,7 @@ var qrCmd = &cobra.Command{
 	Short: "Generate a QR Code for the named key",
 	Long: `qr [key name] prints a QR Code for the key with the given name.
 This can be useful for backing up QR Codes to Google Authenticator or Authy or whatever.`,
-
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
 		service := "keyfob"

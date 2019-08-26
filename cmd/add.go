@@ -49,7 +49,7 @@ Two-factor keys are short case-insensitive strings of letters A-Z and digits 2-7
 		var text string
 
 		if len(args) == 1 {
-			log.Printf("added key named %s: ", name)
+			log.Printf("enter key secret to add for %s: ", name)
 			text, err := bufio.NewReader(os.Stdin).ReadString('\n')
 			if err != nil {
 				log.Fatalf("error reading key: %v", err)
