@@ -1,3 +1,6 @@
+[![GoDoc](https://godoc.org/github.com/StevenACoffman/keyfob?status.svg)](https://godoc.org/github.com/StevenACoffman/keyfob)
+[![GoReportcard](https://goreportcard.com/badge/github.com/StevenACoffman/keyfob?status.svg)](https://goreportcard.com/report/github.com/StevenACoffman/keyfob)
+# Keyfob
 keyfob is a two-factor authentication agent suitable for AWS and Github. Works pretty much the same as Google Authenticator or Authy, but uses your laptop's keychain.
 
 ## Installation
