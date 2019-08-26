@@ -33,7 +33,7 @@ import (
 
 const (
 	execPathKeychain = "/usr/bin/security"
-	)
+)
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{

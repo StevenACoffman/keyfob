@@ -69,7 +69,7 @@ func generateQRCode(service, keyName string) error {
 		return err
 	}
 	uri := fmt.Sprintf("otpauth://totp/%s@%s?secret=%s&issuer=%s",
-		keyName+ ":" + currentUser.Username,
+		keyName+":"+currentUser.Username,
 		keyName,
 		base32.StdEncoding.EncodeToString(raw),
 		keyName,

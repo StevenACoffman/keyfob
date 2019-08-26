@@ -24,12 +24,12 @@ THE SOFTWARE.
 package main
 
 import (
-  "github.com/StevenACoffman/keyfob/cmd"
-  "log"
+	"github.com/StevenACoffman/keyfob/cmd"
+	"log"
 )
 
 func main() {
-  log.SetPrefix("keyfob: ")
-  log.SetFlags(0)
-  cmd.Execute()
+	log.SetPrefix("keyfob: ")
+	log.SetFlags(0)
+	cmd.Execute()
 }
